@@ -1,24 +1,28 @@
-const express = require('express')
+const express = require('express');
 const morgan = require('morgan');
-var bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const fetch = require("node-fetch");
 
-const app = express()
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-app.use(bodyParser.json())
-const port = 3000
-
+const mockApi = require('./mock-api');
 const books = require('./mock-data');
-const indexedBooks = {};
-books.forEach(book => { indexedBooks[book.id] = book });
+const proxyApi = require('./proxy-api');
+const { appUrl, issuerUrl } = require('./proxy-configs');
 
-app.get('/books', (req, res) => res.send(books))
+const app = express();
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+app.use(bodyParser.json());
+const port = 3000;
 
-app.get('/books/:id', (req, res) => res.send(indexedBooks[req.params.id]));
+isMock = process.argv[2] === 'mock';
 
-app.post('/books/', (req, res) => {
-    console.log(req.body);
+// Mock API 
+if (isMock) {
+    mockApi(app, books);
+}
 
+// Proxy API
+else {
+    proxyApi(app, fetch, issuerUrl, appUrl);
+}
 
-})
-
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
