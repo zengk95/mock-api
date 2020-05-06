@@ -37,6 +37,10 @@ This is a mock API and tends to change quite a bit. Writing tests for this doesn
 
 For our dev issuers, the token lasts for 6 hours so it's not really necessary and adds complexity.
 
+## Why don't you use a map in the mock api?
+
+Since the data is stored in an array, we just chose to parse through it instead of converting it into a map of id's to objects.
+
 # Architectural Diagrams
 
 ## Mock API Digram
